@@ -65,7 +65,9 @@ export class VolunteersService {
           ...(updateVolunteerDto.name && { nome: updateVolunteerDto.name }),
           ...(updateVolunteerDto.cpf && { cpf: updateVolunteerDto.cpf }),
           ...(updateVolunteerDto.email && { email: updateVolunteerDto.email }),
-          ...(updateVolunteerDto.phone && { telefone: updateVolunteerDto.phone }),
+          ...(updateVolunteerDto.phone && {
+            telefone: updateVolunteerDto.phone,
+          }),
           ...(updateVolunteerDto.skills && {
             habilidades: updateVolunteerDto.skills.join(', '),
           }),

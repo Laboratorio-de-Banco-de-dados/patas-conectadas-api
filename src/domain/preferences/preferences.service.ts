@@ -6,7 +6,10 @@ import { CreatePreferencesDto } from './create-preferences.dto';
 export class PreferencesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(volunteerId: number, createPreferencesDto: CreatePreferencesDto) {
+  async create(
+    volunteerId: number,
+    createPreferencesDto: CreatePreferencesDto,
+  ) {
     // Check if volunteer exists
     const volunteer = await this.prisma.voluntario.findUnique({
       where: { id_voluntario: volunteerId },
