@@ -118,15 +118,21 @@ model status_tarefa {
 }
 
 model tarefa {
-  id_tarefa     Int           @id @default(autoincrement())
-  descricao     String        @db.VarChar(200)
-  data          DateTime      @db.Date
-  id_status     Int
-  id_voluntario Int?
-  id_animal     Int?
-  animal        animal?       @relation(fields: [id_animal], references: [id_animal], onUpdate: NoAction)
-  status_tarefa status_tarefa @relation(fields: [id_status], references: [id_status])
-  voluntario    voluntario?   @relation(fields: [id_voluntario], references: [id_voluntario], onUpdate: NoAction)
+  id_tarefa      Int           @id @default(autoincrement())
+  title          String        @db.VarChar(200)
+  descricao      String        @db.Text
+  data           DateTime      @db.Date
+  id_status      Int
+  id_voluntario  Int?
+  id_animal      Int?
+  status         String        @default("pending") @db.VarChar(20)
+  target_entity  String?       @db.VarChar(200)
+  due_date       DateTime?     @db.Timestamp(6)
+  created_at     DateTime      @default(now()) @db.Timestamp(6)
+  updated_at     DateTime      @updatedAt @db.Timestamp(6)
+  animal         animal?       @relation(fields: [id_animal], references: [id_animal], onUpdate: NoAction)
+  status_tarefa  status_tarefa @relation(fields: [id_status], references: [id_status])
+  voluntario     voluntario?   @relation(fields: [id_voluntario], references: [id_voluntario], onUpdate: NoAction)
 
   @@index([id_animal], map: "idx_tarefa_id_animal")
   @@index([id_status], map: "idx_tarefa_id_status")
@@ -142,7 +148,21 @@ model voluntario {
   telefone             String         @db.VarChar(15)
   habilidades          String?        @db.VarChar(200)
   preferencias_atuacao String?        @db.VarChar(200)
+  created_at           DateTime       @default(now()) @db.Timestamp(6)
+  updated_at           DateTime       @updatedAt @db.Timestamp(6)
   gamificacao          gamificacao[]
   participacao         participacao[]
   tarefa               tarefa[]
+  preferencia          preferencia[]
+}
+
+model preferencia {
+  id_preferencia Int        @id @default(autoincrement())
+  id_voluntario  Int
+  preference     String     @db.VarChar(200)
+  created_at     DateTime   @default(now()) @db.Timestamp(6)
+  updated_at     DateTime   @updatedAt @db.Timestamp(6)
+  voluntario     voluntario @relation(fields: [id_voluntario], references: [id_voluntario], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([id_voluntario], map: "idx_preferencia_id_voluntario")
 }
