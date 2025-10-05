@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model adocao {
+  id_adocao              Int      @id @default(autoincrement())
+  data_adocao            DateTime @db.Date
+  termo_responsabilidade Boolean
+  id_animal              Int      @unique
+  id_adotante            Int
+  adotante               adotante @relation(fields: [id_adotante], references: [id_adotante], onUpdate: NoAction)
+  animal                 animal   @relation(fields: [id_animal], references: [id_animal], onUpdate: NoAction)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model adotante {
+  id_adotante Int      @id @default(autoincrement())
+  nome        String   @db.VarChar(100)
+  cpf         String   @unique @db.Char(11)
+  endereco    String   @db.VarChar(200)
+  contato     String   @db.VarChar(100)
+  adocao      adocao[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model animal {
+  id_animal        Int           @id @default(autoincrement())
+  nome             String        @db.VarChar(100)
+  especie          String        @db.VarChar(10)
+  raca             String?       @db.VarChar(50)
+  idade_aproximada Int?
+  porte            String?       @db.VarChar(10)
+  data_resgate     DateTime      @db.Date
+  id_status        Int
+  historico_medico String?       @db.VarChar(500)
+  adocao           adocao?
+  status_animal    status_animal @relation(fields: [id_status], references: [id_status])
+  tarefa           tarefa[]
+
+  @@index([id_status], map: "idx_animal_id_status")
+}
+
+model doacao {
+  id_doacao        Int      @id @default(autoincrement())
+  tipo             String   @db.VarChar(20)
+  valor_quantidade String   @db.VarChar(50)
+  descricao        String?  @db.VarChar(200)
+  data             DateTime @db.Date
+  id_doador        Int
+  doador           doador   @relation(fields: [id_doador], references: [id_doador], onUpdate: NoAction)
+
+  @@index([id_doador], map: "idx_doacao_id_doador")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model doador {
+  id_doador    Int            @id @default(autoincrement())
+  nome         String         @db.VarChar(100)
+  cpf_cnpj     String         @unique @db.Char(14)
+  contato      String         @db.VarChar(100)
+  doacao       doacao[]
+  participacao participacao[]
+}
+
+model evento {
+  id_evento    Int            @id @default(autoincrement())
+  nome         String         @db.VarChar(100)
+  data         DateTime       @db.Date
+  local        String         @db.VarChar(200)
+  descricao    String?        @db.VarChar(500)
+  meta         String?        @db.VarChar(100)
+  participacao participacao[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model gamificacao {
+  id_pontuacao  Int        @id @default(autoincrement())
+  id_voluntario Int
+  pontos        Int
+  badge         String?    @db.VarChar(50)
+  data          DateTime   @db.Date
+  voluntario    voluntario @relation(fields: [id_voluntario], references: [id_voluntario], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([id_voluntario], map: "idx_gamificacao_id_voluntario")
+}
+
+model participacao {
+  id_participacao Int         @id @default(autoincrement())
+  id_evento       Int
+  id_voluntario   Int?
+  id_doador       Int?
+  funcao          String      @db.VarChar(50)
+  doador          doador?     @relation(fields: [id_doador], references: [id_doador], onUpdate: NoAction)
+  evento          evento      @relation(fields: [id_evento], references: [id_evento], onDelete: Cascade, onUpdate: NoAction)
+  voluntario      voluntario? @relation(fields: [id_voluntario], references: [id_voluntario], onUpdate: NoAction)
+
+  @@index([id_doador], map: "idx_participacao_id_doador")
+  @@index([id_evento], map: "idx_participacao_id_evento")
+  @@index([id_voluntario], map: "idx_participacao_id_voluntario")
+}
+
+model status_animal {
+  id_status Int      @id @default(autoincrement())
+  status    String   @unique @db.VarChar(20)
+  animal    animal[]
+}
+
+model status_tarefa {
+  id_status Int      @id @default(autoincrement())
+  status    String   @unique @db.VarChar(20)
+  tarefa    tarefa[]
+}
+
+model tarefa {
+  id_tarefa     Int           @id @default(autoincrement())
+  descricao     String        @db.VarChar(200)
+  data          DateTime      @db.Date
+  id_status     Int
+  id_voluntario Int?
+  id_animal     Int?
+  animal        animal?       @relation(fields: [id_animal], references: [id_animal], onUpdate: NoAction)
+  status_tarefa status_tarefa @relation(fields: [id_status], references: [id_status])
+  voluntario    voluntario?   @relation(fields: [id_voluntario], references: [id_voluntario], onUpdate: NoAction)
+
+  @@index([id_animal], map: "idx_tarefa_id_animal")
+  @@index([id_status], map: "idx_tarefa_id_status")
+  @@index([id_voluntario], map: "idx_tarefa_id_voluntario")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model voluntario {
+  id_voluntario        Int            @id @default(autoincrement())
+  nome                 String         @db.VarChar(100)
+  cpf                  String         @unique @db.Char(11)
+  email                String         @unique @db.VarChar(100)
+  telefone             String         @db.VarChar(15)
+  habilidades          String?        @db.VarChar(200)
+  preferencias_atuacao String?        @db.VarChar(200)
+  gamificacao          gamificacao[]
+  participacao         participacao[]
+  tarefa               tarefa[]
+}
