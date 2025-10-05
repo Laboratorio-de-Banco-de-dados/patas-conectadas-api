@@ -23,12 +23,61 @@
 
 ## Description
 
+Patas Conectadas API - Sistema de gerenciamento para ONGs de proteção animal.
+
+### Funcionalidades Implementadas
+
+#### RF04 - Gerenciamento de Voluntários
+- Cadastro, atualização, listagem e remoção de voluntários
+- Validações de CPF e email únicos
+- Gerenciamento de habilidades dos voluntários
+
+#### RF05 - Preferências de Atuação
+- Registro de preferências de trabalho dos voluntários
+- Listagem e remoção de preferências
+- Associação de múltiplas preferências por voluntário
+
+#### RF06 - Sistema de Tarefas
+- Criação de tarefas com título, descrição e prazo
+- Atribuição de tarefas a voluntários
+- Controle de status (pending, assigned, completed)
+- Listagem de tarefas por voluntário e status
+- Marcação de tarefas como concluídas
+
+Para mais detalhes sobre os endpoints, consulte a [documentação completa](./docs/RF04-RF06.md).
+
+### Tecnologias
+
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Project setup
 
 ```bash
 $ npm install
+```
+
+## Database setup
+
+1. Configure PostgreSQL connection in `.env` file:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/patas_conectadas"
+```
+
+2. Run migrations to create tables:
+```bash
+# Generate Prisma client
+$ npx prisma generate
+
+# Run migrations
+$ npx prisma db push
+
+# Or execute the migration SQL directly
+$ psql -U user -d patas_conectadas -f prisma/migrations/20250105_add_preferences_and_update_tasks/migration.sql
+```
+
+3. (Optional) Seed initial data for task statuses:
+```sql
+INSERT INTO status_tarefa (status) VALUES ('pending'), ('assigned'), ('completed');
 ```
 
 ## Compile and run the project
