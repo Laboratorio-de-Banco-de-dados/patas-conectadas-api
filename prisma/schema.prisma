@@ -119,11 +119,16 @@ model status_tarefa {
 
 model tarefa {
   id_tarefa     Int           @id @default(autoincrement())
+  title         String        @db.VarChar(100)
   descricao     String        @db.VarChar(200)
   data          DateTime      @db.Date
+  due_date      DateTime?     @db.Date
+  target_entity String?       @db.VarChar(50)
   id_status     Int
   id_voluntario Int?
   id_animal     Int?
+  created_at    DateTime      @default(now()) @db.Timestamp(6)
+  updated_at    DateTime      @default(now()) @db.Timestamp(6)
   animal        animal?       @relation(fields: [id_animal], references: [id_animal], onUpdate: NoAction)
   status_tarefa status_tarefa @relation(fields: [id_status], references: [id_status])
   voluntario    voluntario?   @relation(fields: [id_voluntario], references: [id_voluntario], onUpdate: NoAction)
@@ -145,4 +150,16 @@ model voluntario {
   gamificacao          gamificacao[]
   participacao         participacao[]
   tarefa               tarefa[]
+  preferencia          preferencia[]
+}
+
+model preferencia {
+  id_preferencia Int        @id @default(autoincrement())
+  id_voluntario  Int
+  tipo           String     @db.VarChar(50)
+  valor          String     @db.VarChar(200)
+  created_at     DateTime   @default(now()) @db.Timestamp(6)
+  voluntario     voluntario @relation(fields: [id_voluntario], references: [id_voluntario], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([id_voluntario], map: "idx_preferencia_id_voluntario")
 }

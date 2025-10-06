@@ -25,6 +25,62 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+API para gerenciamento de sistema de adoção de animais "Patas Conectadas".
+
+## Database Setup
+
+Este projeto usa PostgreSQL com Prisma ORM. Certifique-se de ter PostgreSQL instalado e rodando.
+
+### 1. Configurar variável de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```bash
+DATABASE_URL="postgresql://usuario:senha@localhost:5432/patas_conectadas"
+PORT=3000
+```
+
+### 2. Criar banco de dados inicial
+
+Você pode usar o script SQL fornecido para criar a estrutura inicial:
+
+```bash
+psql -U postgres -f prisma/sql_start.sql
+```
+
+### 3. Rodar migrações
+
+Para aplicar as migrações mais recentes (incluindo tabela de preferências e campos de tarefas):
+
+```bash
+psql -U usuario -d patas_conectadas -f prisma/migrations/20250105_add_preferences_and_update_tasks/migration.sql
+```
+
+### 4. Seed dos status de tarefa
+
+Os status de tarefa (pending, assigned, completed) são necessários para o funcionamento do sistema. Eles são criados automaticamente pela API usando `upsert`, mas você também pode inserí-los manualmente:
+
+```sql
+INSERT INTO status_tarefa (status) VALUES ('pending'), ('assigned'), ('completed')
+ON CONFLICT (status) DO NOTHING;
+```
+
+### 5. Gerar Prisma Client
+
+```bash
+npm run postinstall
+# ou
+npx prisma generate
+```
+
+## Features Implementadas
+
+- **RF04**: CRUD completo de voluntários com validações (CPF único, email único)
+- **RF05**: Sistema de preferências de voluntários
+- **RF06**: Sistema de tarefas com estados (pending → assigned → completed)
+
+Para documentação detalhada dos endpoints, consulte [docs/RF04-RF06.md](docs/RF04-RF06.md).
+
 ## Project setup
 
 ```bash
