@@ -25,7 +25,12 @@ export class DonationsService {
   }
 
   async create(data: CreateDonationDto) {
-    return await this.prisma.doacao.create({ data });
+    data.data = data.data.trim().length
+      ? new Date(data.data).toISOString()
+      : new Date().toISOString();
+    return await this.prisma.doacao.create({
+      data,
+    });
   }
 
   async update(id: number, data: UpdateDonationDto) {

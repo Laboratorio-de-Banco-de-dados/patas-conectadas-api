@@ -22,8 +22,9 @@ export class AnimalsService {
   async create(data: CreateAnimalDto) {
     // converter data_resgate para Date caso necessário (Prisma aceita ISO string)
     data.data_resgate = data.data_resgate.trim().length
-      ? data.data_resgate
+      ? new Date(data.data_resgate).toISOString()
       : new Date().toISOString();
+
     return await this.prisma.animal.create({ data });
   }
 
