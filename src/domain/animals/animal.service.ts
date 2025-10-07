@@ -37,4 +37,24 @@ export class AnimalsService {
   remove(id: number) {
     return this.prisma.animal.delete({ where: { id_animal: id } });
   }
+
+  async getMedicalHistory(id: number) {
+    const animal = await this.prisma.animal.findUnique({
+      where: { id_animal: id },
+      select: {
+        id_animal: true,
+        nome: true,
+        especie: true,
+        historico_medico: true,
+      },
+    });
+    return animal;
+  }
+
+  async updateStatus(id: number, statusId: number) {
+    return await this.prisma.animal.update({
+      where: { id_animal: id },
+      data: { id_status: statusId },
+    });
+  }
 }

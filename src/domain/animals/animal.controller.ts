@@ -7,6 +7,7 @@ import {
   Delete,
   Put,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { AnimalsService } from './animal.service';
 import { CreateAnimalDto } from './create-animal.dto';
@@ -42,5 +43,18 @@ export class AnimalsController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.animalsService.remove(id);
+  }
+
+  @Get(':id/medical-history')
+  getMedicalHistory(@Param('id', ParseIntPipe) id: number) {
+    return this.animalsService.getMedicalHistory(id);
+  }
+
+  @Patch(':id/status/:statusId')
+  updateStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('statusId', ParseIntPipe) statusId: number,
+  ) {
+    return this.animalsService.updateStatus(id, statusId);
   }
 }
